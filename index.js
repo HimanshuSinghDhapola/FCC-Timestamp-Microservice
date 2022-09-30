@@ -32,7 +32,30 @@ var listener = app.listen(3000, function () {
 });
 
 let data = {}
-app.get("/api/:date", (req, res) => {
-  let date = req.params.date;
-  res.send({date});
+app.get("/api/:timestamp", (req, res) => {
+  let timestamp = req.params.timestamp;
+  if(!isNaN(Number(timestamp)) && timestamp.length === 13){
+    return res.send({
+      unix: parseInt(timestamp),
+      utc: new Date(Number(timestamp)).toUTCString()
+    });
+  } else if(new Date(timestamp).toUTCString() !== 'Invalid Date'){
+    let date = new Date(timestamp);
+    return res.send({
+      unix: date.valueOf(),
+      utc: date.toUTCString()
+    });
+  }else{
+    res.send({
+      error : "Invalid Date"
+    })
+  }
+})
+
+app.get("/api", (req, res) => {
+  let date = new Date();
+  res.send({
+    unix: date.valueOf(),
+    utc: date.toUTCString()
+  })
 })
